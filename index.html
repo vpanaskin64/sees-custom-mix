@@ -162,6 +162,115 @@ html,body{ height:100%; background:#ccc; font-family:var(--font); -webkit-font-s
 }
 .chip.active{ border-color:var(--black); color:var(--black); font-weight:500; }
 
+
+/* ── TOAST ───────────────────────────────────────────── */
+.toast{
+  position:absolute; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--black); color:var(--white);
+  font-size:13px; font-weight:500; letter-spacing:.01em;
+  padding:10px 20px; border-radius:4px;
+  white-space:nowrap; z-index:300;
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.toast.show{
+  opacity:1; transform:translateX(-50%) translateY(0);
+}
+
+/* ── ONBOARDING MODAL ───────────────────────────────────── */
+#onboard-backdrop{
+  position:absolute; inset:0; z-index:400;
+  background:rgba(0,0,0,0.5);
+  display:none;
+}
+#onboard-backdrop.open{ display:block; }
+#onboard-modal{
+  position:absolute; bottom:0; left:0; right:0; z-index:401;
+  background:white; border-radius:4px 4px 0 0;
+  display:none; flex-direction:column;
+  height:750px;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+#onboard-modal.open{
+  display:flex;
+  transform:translateY(0);
+}
+.ob-header{
+  display:flex; align-items:center;
+  padding:0 16px; height:56px; flex-shrink:0;
+  border-bottom:1px solid var(--gray-100);
+}
+.ob-title{
+  flex:1; font-size:16px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.02em; color:var(--black);
+}
+.ob-close{
+  width:24px; height:24px; display:flex;
+  align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0;
+}
+.ob-body{
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:24px 20px; gap:0; overflow:hidden;
+}
+/* Slider track */
+.ob-track-wrap{
+  width:100%; overflow:hidden; position:relative;
+}
+.ob-track{
+  display:flex; transition:transform .35s cubic-bezier(.4,0,.2,1);
+  width:400%; /* 4 slides */
+}
+.ob-slide{
+  width:25%; flex-shrink:0;
+  display:flex; flex-direction:column;
+  align-items:center; gap:16px;
+  padding:0 4px;
+}
+.ob-video{
+  width:273px; height:427px;
+  background:var(--gray-100);
+  border-radius:2px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.ob-video-icon{
+  width:48px; height:48px;
+  border-radius:50%; background:rgba(255,255,255,0.85);
+  display:flex; align-items:center; justify-content:center;
+}
+.ob-caption{
+  font-size:14px; line-height:20px;
+  color:var(--black); text-align:center;
+  max-width:280px;
+}
+.ob-dots{
+  display:flex; gap:6px; align-items:center;
+  margin-top:16px; flex-shrink:0;
+}
+.ob-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--gray-200); transition:all .2s;
+  cursor:pointer;
+}
+.ob-dot.active{
+  background:var(--black); width:18px; border-radius:3px;
+}
+.ob-footer{
+  background:var(--gray-50);
+  padding:16px 16px 20px; flex-shrink:0;
+}
+.ob-btn{
+  width:100%; height:40px;
+  background:var(--black); color:white;
+  font-size:16px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.04em;
+  border:none; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
 /* ── PRODUCT GRID ────────────────────────────────────── */
 .grid-scroll{
   flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
@@ -792,6 +901,64 @@ html,body{ height:100%; background:#ccc; font-family:var(--font); -webkit-font-s
       <div class="grid-scroll" id="grid"></div>
       <!-- sticky cta -->
       <div class="sticky" id="sticky-cta"></div>
+    <div class="toast" id="toast"></div>
+
+    </div>
+
+
+    <!-- ══ ONBOARDING MODAL ══ -->
+    <div id="onboard-backdrop"></div>
+    <div id="onboard-modal">
+      <div class="ob-header">
+        <span class="ob-title">How it works</span>
+        <div class="ob-close" onclick="closeOnboarding()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <line x1="18.17" y1="17.70" x2="6.21" y2="5.74" stroke="#111" stroke-width="1.75"/>
+            <line x1="17.70" y1="5.74" x2="5.75" y2="17.70" stroke="#111" stroke-width="1.75"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ob-body">
+        <div class="ob-track-wrap" style="user-select:none;cursor:grab">
+          <div class="ob-track" id="ob-track">
+
+        <div class="ob-slide">
+          <div class="ob-video">
+            <div class="ob-video-icon"><svg viewBox="0 0 24 24" fill="#111" width="20" height="20"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div style="position:absolute;bottom:12px;left:12px;right:12px;font-size:12px;font-weight:700;color:var(--text-2);text-align:center">Pick your chocolates</div>
+          </div>
+          <p class="ob-caption">Browse up to 8–12 flavors and tap any chocolate to add it to your custom box.</p>
+        </div>
+        <div class="ob-slide">
+          <div class="ob-video">
+            <div class="ob-video-icon"><svg viewBox="0 0 24 24" fill="#111" width="20" height="20"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div style="position:absolute;bottom:12px;left:12px;right:12px;font-size:12px;font-weight:700;color:var(--text-2);text-align:center">Set your mix</div>
+          </div>
+          <p class="ob-caption">Adjust how much of each flavor you want — use percentages to fill your box exactly the way you like.</p>
+        </div>
+        <div class="ob-slide">
+          <div class="ob-video">
+            <div class="ob-video-icon"><svg viewBox="0 0 24 24" fill="#111" width="20" height="20"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div style="position:absolute;bottom:12px;left:12px;right:12px;font-size:12px;font-weight:700;color:var(--text-2);text-align:center">Choose your box</div>
+          </div>
+          <p class="ob-caption">Pick from White, Heart, or Square box styles. Upgrade your size anytime and your flavors carry over.</p>
+        </div>
+        <div class="ob-slide">
+          <div class="ob-video">
+            <div class="ob-video-icon"><svg viewBox="0 0 24 24" fill="#111" width="20" height="20"><polygon points="5,3 19,12 5,21"/></svg></div>
+            <div style="position:absolute;bottom:12px;left:12px;right:12px;font-size:12px;font-weight:700;color:var(--text-2);text-align:center">Add to bag</div>
+          </div>
+          <p class="ob-caption">When your box is full, tap Add to Bag. Your custom mix is saved and ready to gift.</p>
+        </div>
+          </div>
+        </div>
+        <div class="ob-dots" id="ob-dots">
+          <div class="ob-dot active" id="ob-dot-0" onclick="obGoTo(0)"></div><div class="ob-dot" id="ob-dot-1" onclick="obGoTo(1)"></div><div class="ob-dot" id="ob-dot-2" onclick="obGoTo(2)"></div><div class="ob-dot" id="ob-dot-3" onclick="obGoTo(3)"></div>
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-btn" id="ob-btn" onclick="onboardNext()">GET STARTED</button>
+      </div>
     </div>
 
     <!-- ══ BAG CONFIRMATION SCREEN ══ -->
@@ -1434,7 +1601,7 @@ function renderCTA() {
     }
     const nk = UPGRADE_MAP[S.size]; // only upgrade to a box with more flavors
     if (!nk) return '';
-    return `<div class="upsell-banner" style="margin-bottom:8px;cursor:pointer" onclick="setSize('${nk}')">
+    return `<div class="upsell-banner" style="margin-bottom:8px;cursor:pointer" onclick="setSize('${nk}');showToast('Upgraded to ${nk} · ${BOXES[nk].maxFl} flavors max ✓')">
       <div class="upsell-left">
         <div class="upsell-title">Box fits max ${cfg.maxFl} flavors</div>
         <div class="upsell-sub">Upgrade to ${nk} for ${BOXES[nk].maxFl} flavors</div>
@@ -1578,8 +1745,8 @@ document.addEventListener('click', e => {
    INIT
    ════════════════════════════════════════════════════ */
 render();
-
-/* ════ WHAT'S INSIDE MODAL ════════════════════════════ */
+// Show onboarding for first-time users
+openOnboarding();
 const WI_DATA = {
   0: {desc:"A creamy strawberry truffle center dipped in rich milk chocolate.", ingredients:"Sugar, Cream, Milk Chocolate, Strawberry Puree, Butter, Vanilla."},
   1: {desc:"A smooth caramel pattie dipped in rich milk chocolate.", ingredients:"Sugar, Cream, Milk Chocolate, Butter, Corn Syrup, Vanilla."},
@@ -1803,6 +1970,92 @@ function confirmDowngrade() {
   var src = BOX_IMG[st] || BOX_IMG.white;
   el.innerHTML = '<img src="' + src + '" style="width:94px;height:94px;object-fit:contain;display:block;margin:auto">';
 });
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// ── ONBOARDING ──────────────────────────────────────────
+var _obStep = 0;
+var _obTotal = 4;
+
+function openOnboarding() {
+  _obStep = 0;
+  updateOnboard();
+  var bd = document.getElementById('onboard-backdrop');
+  var md = document.getElementById('onboard-modal');
+  bd.classList.add('open');
+  md.style.display = 'flex';
+  requestAnimationFrame(function(){ md.classList.add('open'); });
+  initOnboardSwipe();
+}
+
+function closeOnboarding() {
+  var bd = document.getElementById('onboard-backdrop');
+  var md = document.getElementById('onboard-modal');
+  bd.classList.remove('open');
+  md.classList.remove('open');
+  setTimeout(function(){ md.style.display = ''; }, 300);
+}
+
+function onboardNext() {
+  if (_obStep < _obTotal - 1) {
+    _obStep++;
+    updateOnboard();
+  } else {
+    closeOnboarding();
+  }
+}
+
+function obGoTo(idx) {
+  _obStep = idx;
+  updateOnboard();
+}
+
+function updateOnboard() {
+  // Slide track
+  var track = document.getElementById('ob-track');
+  if (track) track.style.transform = 'translateX(-' + (_obStep * 25) + '%)';
+  // Dots
+  for (var i = 0; i < _obTotal; i++) {
+    var dot = document.getElementById('ob-dot-' + i);
+    if (dot) dot.classList.toggle('active', i === _obStep);
+  }
+  // Button label
+  var btn = document.getElementById('ob-btn');
+  if (btn) btn.textContent = _obStep < _obTotal - 1 ? 'NEXT' : 'GET STARTED';
+}
+
+// Swipe support — pointer events on track wrapper
+function initOnboardSwipe() {
+  var wrap = document.getElementById('ob-track');
+  if (!wrap || wrap._swipeInit) return;
+  wrap._swipeInit = true;
+  var startX = 0, startY = 0, isDown = false;
+
+  function onStart(x, y) { startX = x; startY = y; isDown = true; }
+  function onEnd(x, y) {
+    if (!isDown) return; isDown = false;
+    var dx = x - startX, dy = y - startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+      if (dx < 0 && _obStep < _obTotal - 1) { _obStep++; updateOnboard(); }
+      if (dx > 0 && _obStep > 0) { _obStep--; updateOnboard(); }
+    }
+  }
+  // Touch
+  wrap.addEventListener('touchstart', function(e){ onStart(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+  wrap.addEventListener('touchend',   function(e){ onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY); }, {passive:true});
+  // Mouse (for desktop testing)
+  wrap.addEventListener('mousedown',  function(e){ onStart(e.clientX, e.clientY); });
+  wrap.addEventListener('mouseup',    function(e){ onEnd(e.clientX, e.clientY); });
+  wrap.addEventListener('mouseleave', function()  { isDown = false; });
+}
+
 function expandSearch() {
   var btn = document.getElementById('search-btn');
   var inp = document.getElementById('search-input');
